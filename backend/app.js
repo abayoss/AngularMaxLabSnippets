@@ -1,9 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+const Post = require('./models/post');
 
 const app = express();
 // returns a valid express middleware for parsing JSON data
 app.use(bodyParser.json());
+
+mongoose.connect('mongodb://localhost/maxNodeAng', {
+  useNewUrlParser: true })
+  .then(() => console.log('MongoDB Connected...!'))
+  .catch(err => console.log(err))
 
 // Adding headers to prevent Cors error :
 app.use(function (req, res, next) {
@@ -26,20 +34,34 @@ app.use(function (req, res, next) {
 });
 
 app.post('/api/posts',(req, res, next) => {
-  const post = req.body;
-  console.log(post);
-  res.status(201).json({ message: 'post added !' })
+  // using body parser to get body :
+  const post = new Post({
+    title: req.body.title,
+    content: req.body.content
+  });
+  // saving data with mongoose :
+  post.save().then( createdPost => {
+    console.log(post);
+    res.status(201).json({
+      message: 'post added !' ,
+      postId: createdPost._id
+    })
+  });
+});
+
+app.delete('/api/posts/:id',(req, res, next) => {
+  Post.deleteOne({ _id: req.params.id })
+      .then(()=> {
+    res.status(203).json({ message: 'post deleted !' })
+  });
 });
 
 app.get('/api/posts', (req, res, next) => {
-  const posts = [
-    { id: 1, title: 'her', content: 'her content' },
-    { id: 2, title: 'her2', content: 'her2 content' },
-    { id: 3, title: 'her3', content: 'her3 content' }
-  ];
-  res.json({
-    message: 'post fetched ! ',
-    posts
+  Post.find().then((posts)=>{
+    res.json({
+      message: 'post fetched ! ',
+      posts
+    });
   });
 });
 
