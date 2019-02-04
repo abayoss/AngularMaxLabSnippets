@@ -1,5 +1,5 @@
 import { Injectable, OnInit } from '@angular/core';
-import { Post } from './posts/post.model';
+import { Post } from './post.model';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
@@ -34,7 +34,11 @@ export class PostService implements OnInit {
   getPostUpdateListener() {
     return this.postsUpdated.asObservable();
   }
-  addPosts(post) {
+  getPost(id: string ) {
+    // return {...this.posts.find(post => post.id === id)};
+    return this.http.get<{_id: string, title: string, content: string}>('http://localhost:3000/api/posts/' + id);
+  }
+  addPosts(post: Post) {
     this.http
       .post<{ message: string, postId: string }>('http://localhost:3000/api/posts', post)
       .subscribe(res => {
@@ -45,7 +49,18 @@ export class PostService implements OnInit {
         this.postsUpdated.next([...this.posts]);
       });
   }
-  deletePost(id) {
+  updatPost(post: Post) {
+    this.http.put<{ message: string}>(`http://localhost:3000/api/posts/${post.id}`, post)
+    .subscribe(res => {
+      console.log(res.message);
+      const updatedPosts = [...this.posts];
+      const oldPostIndex = updatedPosts.findIndex(p => p.id === post.id);
+      updatedPosts[oldPostIndex] = post;
+      this.posts = updatedPosts;
+      this.postsUpdated.next([...this.posts]);
+    });
+  }
+  deletePost(id: string) {
     this.http
       .delete<{ message: string }>(`http://localhost:3000/api/posts/${id}`)
       .subscribe(res => {

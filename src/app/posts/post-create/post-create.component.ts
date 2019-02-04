@@ -1,7 +1,8 @@
-import { Component, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { PostService } from 'src/app/post.service';
+import { PostService } from '../post.service';
 import { Post } from '../post.model';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 
 @Component({
@@ -9,11 +10,35 @@ import { Post } from '../post.model';
   templateUrl: './post-create.component.html',
   styleUrls: ['./post-create.component.css']
 })
-export class PostCreateComponent {
+export class PostCreateComponent implements OnInit {
+  post: Post;
+  private mode = 'create';
+  private postId: string;
+  isLoading = false;
 
-  constructor(private postService: PostService) {}
+  constructor(private postService: PostService, private route: ActivatedRoute, private router: Router) {}
 
-  onAddPost(form: NgForm) {
+  ngOnInit() {
+    this.route.paramMap.subscribe(( paramMap: ParamMap) => {
+      if (paramMap.has('postId')) {
+        this.mode = 'edit';
+        this.postId = paramMap.get('postId');
+        this.isLoading = true;
+        this.postService.getPost(this.postId).subscribe(postData => {
+          this.post = { id: postData._id, title: postData.title, content: postData.content };
+          // the time out is just to show the spinner
+          setTimeout(() => {
+              this.isLoading = false;
+            }, 2000);
+        });
+      } else {
+        this.mode = 'create';
+        this.postId = null;
+      }
+      console.log('mode = ' + this.mode );
+    });
+  }
+  onSavePost(form: NgForm) {
     if ( form.invalid ) {
       return;
     }
@@ -22,7 +47,14 @@ export class PostCreateComponent {
       title: form.value.title,
       content: form.value.content
     };
-    this.postService.addPosts(post);
+    if ( this.mode === 'create') {
+      this.postService.addPosts(post);
+      this.router.navigate(['']);
+    } else {
+      post.id = this.postId;
+      this.postService.updatPost(post);
+      this.router.navigate(['']);
+    }
     form.resetForm();
   }
 }
