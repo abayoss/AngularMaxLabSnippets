@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -7,6 +8,8 @@ const PostsRouter = require('./routes/posts')
 const app = express();
 // returns a valid express middleware for parsing JSON data
 app.use(bodyParser.json());
+// grant access to the images folder
+app.use('/images', express.static(path.join('backend/images')));
 
 mongoose.connect('mongodb://localhost/maxNodeAng', {
   useNewUrlParser: true })

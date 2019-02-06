@@ -9,3 +9,12 @@
 mat-spinner {
   margin: auto;
 }
+
+.post-image {
+  width: 80vh;
+}
+
+.post-image img {
+  height: 20vh;
+  margin: 1rem 0;
+}
