@@ -88,10 +88,26 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.get('', (req, res, next) => {
-  Post.find().then((posts)=>{
+  pagesize = +req.query.pagesize;
+  currentPage = +req.query.page;
+  postQuery = Post.find();
+  let docs;
+  if(pagesize && currentPage) {
+    postQuery.skip( pagesize * (currentPage - 1))
+    .limit(pagesize)
+    console.log(req.query);
+  }
+
+  postQuery
+  .then(documents => {
+    docs = documents;
+    return Post.countDocuments();
+  })
+  .then((posts)=>{
     res.json({
       message: 'post fetched ! ',
-      posts
+      posts : docs,
+      maxPosts: posts
     });
   });
 });

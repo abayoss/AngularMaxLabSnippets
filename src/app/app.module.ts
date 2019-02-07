@@ -12,6 +12,7 @@ import {
   MatExpansionModule,
   MatProgressSpinnerModule
 } from '@angular/material';
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 import { HeaderComponent } from './header/header.component';
 import { PostCreateComponent } from './posts/post-create/post-create.component';
@@ -19,13 +20,17 @@ import { PostListComponent } from './posts/post-list/post-list.component';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { LoginComponent } from './auth/login/login.component';
+import { SignupComponent } from './auth/signup/signup.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
     PostListComponent,
-    PostCreateComponent
+    PostCreateComponent,
+    LoginComponent,
+    SignupComponent
   ],
   imports: [
     BrowserModule,
@@ -38,7 +43,8 @@ import { AppComponent } from './app.component';
     MatToolbarModule,
     MatExpansionModule,
     MatProgressSpinnerModule,
-    AppRoutingModule
+    AppRoutingModule,
+    MatPaginatorModule
   ],
   providers: [],
   bootstrap: [AppComponent]
