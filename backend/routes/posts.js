@@ -3,6 +3,8 @@ const multer = require('multer');
 
 const router = express();
 
+const authCheck = require('../middleware/auth-check');
+
 const MIME_TIPE_MAP = {
   'image/png': 'png',
   'image/jpeg': 'jpeg',
@@ -27,8 +29,7 @@ const storage = multer.diskStorage({
 
 const Post = require('../models/post');
 
-router.post('', multer({storage: storage}).single("image"), (req, res, next) => {
-  console.log(req.file.filename);
+router.post('', authCheck, multer({storage: storage}).single("image"), (req, res, next) => {
   const url = req.protocol + "://" + req.get("host");
 
   const post = new Post({
@@ -38,7 +39,6 @@ router.post('', multer({storage: storage}).single("image"), (req, res, next) => 
   });
   // saving data with mongoose :
   post.save().then( createdPost => {
-    console.log(post);
     res.status(201).json({
       message: 'post added !' ,
       post: {
@@ -49,7 +49,7 @@ router.post('', multer({storage: storage}).single("image"), (req, res, next) => 
   });
 });
 
-router.put('/:id', multer({storage: storage}).single("image"), (req, res, next) => {
+router.put('/:id', authCheck, multer({storage: storage}).single("image"), (req, res, next) => {
   let imagePath = req.body.imagePath;
   if ( req.file ) {
     const url = req.protocol + "://" + req.get("host");
@@ -62,7 +62,6 @@ router.put('/:id', multer({storage: storage}).single("image"), (req, res, next) 
     image: imagePath
   })
   Post.updateOne({ _id: req.params.id }, post).then(result => {
-    console.log(result);
     res.json({
       message: 'post Updated !',
       post
@@ -70,7 +69,7 @@ router.put('/:id', multer({storage: storage}).single("image"), (req, res, next) 
   });
 });
 
-router.delete('/:id',(req, res, next) => {
+router.delete('/:id', authCheck, (req, res, next) => {
   Post.deleteOne({ _id: req.params.id })
       .then(()=> {
     res.status(203).json({ message: 'post deleted !' })
@@ -95,7 +94,6 @@ router.get('', (req, res, next) => {
   if(pagesize && currentPage) {
     postQuery.skip( pagesize * (currentPage - 1))
     .limit(pagesize)
-    console.log(req.query);
   }
 
   postQuery

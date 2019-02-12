@@ -2,9 +2,17 @@
   <a routerLink="/"> posts</a>
   <span class="spacer"></span>
   <ul>
-    <li>
+    <li *ngIf='authStatus'>
       <a routerLink="/create" mat-button routerlinkActive="mat-accent">New posts</a>
+    </li>
+    <li *ngIf='!authStatus'>
+      <a routerLink="/login" mat-button routerlinkActive="mat-accent">Login</a>
+    </li>
+    <li *ngIf='!authStatus'>
+      <a routerLink="/signup" mat-button routerlinkActive="mat-accent">SignUp</a>
+    </li>
+    <li *ngIf='authStatus'>
+      <button mat-button routerlinkActive="mat-accent" (click)="onLogOut()">logOut</button>
     </li>
   </ul>
 </mat-toolbar>
-

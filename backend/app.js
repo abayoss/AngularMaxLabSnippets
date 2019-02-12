@@ -3,7 +3,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const PostsRouter = require('./routes/posts')
+const PostsRoutes = require('./routes/posts')
+const UsersRoutes = require('./routes/users')
 
 const app = express();
 // returns a valid express middleware for parsing JSON data
@@ -26,7 +27,7 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
   // Request headers you wish to allow
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin,X-Requested-With,content-type,Accept,Authorization');
 
   // Set to true if you need the website to include cookies in the requests sent
   // to the API (e.g. in case you use sessions)
@@ -36,7 +37,8 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use('/api/posts', PostsRouter);
+app.use('/api/posts', PostsRoutes);
+app.use('/api/users', UsersRoutes);
 
 module.exports = app;
 // the server is listenning in '../server.js'
