@@ -26,11 +26,13 @@ export class PostService implements OnInit {
               title: post.title,
             content: post.content,
             id: post._id,
-            imagePath: post.image
+            imagePath: post.image,
+            creator: post.creator
           };
         }), maxPosts : postData.maxPosts };
       }))
       .subscribe(transformedPostData => {
+        console.log(transformedPostData);
         this.posts = transformedPostData.posts;
         this.postsUpdated.next({
           posts: [...this.posts],
@@ -43,8 +45,13 @@ export class PostService implements OnInit {
   }
   getPost(id: string ) {
     // return {...this.posts.find(post => post.id === id)};
-    return this.http
-    .get<{_id: string, title: string, content: string, image: string}>('http://localhost:3000/api/posts/' + id);
+    return this.http.get<{
+      _id: string,
+      title: string,
+      content: string,
+      image: string,
+      creator: string
+    }>('http://localhost:3000/api/posts/' + id);
   }
   // addPost(post: Post) {
   //   this.http
@@ -74,7 +81,7 @@ export class PostService implements OnInit {
   }
 
   updatPost(post: Post) {
-    let postData;
+    let postData: Post | FormData;
     if ( typeof(post.imagePath) === 'object') {
       postData = new FormData();
       postData.append('id', post.id);
@@ -86,7 +93,8 @@ export class PostService implements OnInit {
         id: post.id,
         title: post.title,
         content: post.content,
-        imagePath: post.imagePath
+        imagePath: post.imagePath,
+        creator: null
       };
     }
     this.http.put<{ message: string, post: Post}>(`http://localhost:3000/api/posts/${post.id}`, postData)

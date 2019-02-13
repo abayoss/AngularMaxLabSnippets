@@ -35,7 +35,8 @@ router.post('', authCheck, multer({storage: storage}).single("image"), (req, res
   const post = new Post({
     title: req.body.title,
     content: req.body.content,
-    image: url + "/images/" + req.file.filename
+    image: url + "/images/" + req.file.filename,
+    creator: req.userData.userId
   });
   // saving data with mongoose :
   post.save().then( createdPost => {
@@ -59,20 +60,37 @@ router.put('/:id', authCheck, multer({storage: storage}).single("image"), (req, 
     _id: req.body.id,
     title: req.body.title,
     content: req.body.content,
-    image: imagePath
+    image: imagePath,
+    creator: req.userData.userId
   })
-  Post.updateOne({ _id: req.params.id }, post).then(result => {
-    res.json({
-      message: 'post Updated !',
-      post
-    });
+  Post.updateOne({ _id: req.params.id, creator: req.userData.userId }, post).then(result => {
+    if ( result.nModified > 0 ){
+      res.json({
+        message: 'post Updated !',
+        post
+      });
+    } else {
+        res.status(401).json({
+          message: 'Not Autorized !',
+          post
+        });
+    }
   });
 });
 
 router.delete('/:id', authCheck, (req, res, next) => {
-  Post.deleteOne({ _id: req.params.id })
-      .then(()=> {
-    res.status(203).json({ message: 'post deleted !' })
+  Post.deleteOne({ _id: req.params.id, creator: req.userData.userId })
+      .then((result)=> {
+        if ( result.n > 0 ){
+          res.json({
+            message: 'post Deleted !',
+          });
+        } else {
+            res.status(401).json({
+              message: 'Not Autorized !',
+              post
+            });
+        }
   });
 });
 
@@ -96,8 +114,7 @@ router.get('', (req, res, next) => {
     .limit(pagesize)
   }
 
-  postQuery
-  .then(documents => {
+  postQuery.then(documents => {
     docs = documents;
     return Post.countDocuments();
   })
