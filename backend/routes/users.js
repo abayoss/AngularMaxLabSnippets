@@ -22,6 +22,7 @@ router.post('/signup', (req, res, next) => {
     });
   }).catch(err=>{
     res.status(404).json({
+      message: 'email invalid or already in use',
       rerror: err
     })
   });
@@ -33,7 +34,7 @@ router.post('/login',(req, res, next ) => {
   .then( user => {
     if(!user) {
       return res.status(404).json({
-        message: 'authentication failed'
+        message: 'invalid loging credentials !'
       });
     };
     // const decPassa = sc.encrypt(req.body.password);
@@ -52,6 +53,7 @@ router.post('/login',(req, res, next ) => {
     // catch errors
   }).catch( err => {
     res.status(404).json({
+      message: 'invalid loging credentials !',
       rerror: err
     });
   });

@@ -36,6 +36,8 @@ export class AuthService {
     .subscribe(response => {
       console.log(response);
       this.router.navigate(['/']);
+    }, err => {
+      this.authStatusListnner.next(false);
     });
   }
 
@@ -58,6 +60,8 @@ export class AuthService {
         this.saveAuthData(this.token, expirationDate, this.userId);
         this.router.navigate(['/']);
       }
+    }, err => {
+      this.authStatusListnner.next(false);
     });
   }
   autoAuthUser() {
@@ -75,12 +79,6 @@ export class AuthService {
       this.authStatusListnner.next(true);
     }
   }
-  private setAuthTimer(duration: number) {
-    console.log('duration : ' + duration);
-    this.tokenTimer = setTimeout(() => {
-      this.logOut();
-    }, duration * 1000);
-  }
   logOut() {
     this.token = null;
     this.isAuthenticated = false;
@@ -89,6 +87,12 @@ export class AuthService {
     clearTimeout(this.tokenTimer);
     this.clearAuthData();
     this.router.navigate(['/']);
+  }
+  private setAuthTimer(duration: number) {
+    console.log('duration : ' + duration);
+    this.tokenTimer = setTimeout(() => {
+      this.logOut();
+    }, duration * 1000);
   }
   private saveAuthData(token: string, expirationDate: Date, userId: string) {
     localStorage.setItem('token', token);

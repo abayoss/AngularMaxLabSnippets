@@ -47,6 +47,10 @@ router.post('', authCheck, multer({storage: storage}).single("image"), (req, res
         id: createdPost._id
       }
     })
+  }).catch( err => {
+    res.status(500).json({
+      message: 'post creation failed !'
+    })
   });
 });
 
@@ -75,6 +79,10 @@ router.put('/:id', authCheck, multer({storage: storage}).single("image"), (req, 
           post
         });
     }
+  }).catch( err => {
+    res.status(500).json({
+      message: 'post Edit failed !'
+    })
   });
 });
 
@@ -91,6 +99,10 @@ router.delete('/:id', authCheck, (req, res, next) => {
               post
             });
         }
+  }).catch( err => {
+    res.status(500).json({
+      message: 'post Deletion failed !'
+    })
   });
 });
 
@@ -101,6 +113,10 @@ router.get('/:id', (req, res, next) => {
     } else {
       res.status(404).json({ message: 'post not found'})
     }
+  }).catch( err => {
+    res.status(500).json({
+      message: 'failed to fetch the Post !'
+    })
   });
 });
 
@@ -124,6 +140,10 @@ router.get('', (req, res, next) => {
       posts : docs,
       maxPosts: posts
     });
+  }).catch( err => {
+    res.status(500).json({
+      message: 'failed to Fetch Posts !'
+    })
   });
 });
 
