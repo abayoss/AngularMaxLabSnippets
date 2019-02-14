@@ -4,7 +4,9 @@ import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
+const BACKEND_URL = environment.MongoApiUrl + '/posts/';
 @Injectable({ providedIn: 'root' })
 export class PostService implements OnInit {
   private posts: Post[] = [];
@@ -16,7 +18,7 @@ export class PostService implements OnInit {
     const queryString = `?pagesize=${postsPerPage}&page=${currentPage}`;
     this.http
       .get<{ message: string; posts: any; maxPosts: number }>(
-        'http://localhost:3000/api/posts' + queryString
+        BACKEND_URL  + queryString
       )
       // the pipe map is for the _id on the db
       .pipe(
@@ -46,7 +48,7 @@ export class PostService implements OnInit {
   getPost(id: string ) {
     // return {...this.posts.find(post => post.id === id)};
     return this.http
-    .get<{_id: string, title: string, content: string, image: string, creator: string}>('http://localhost:3000/api/posts/' + id);
+    .get<{_id: string, title: string, content: string, image: string, creator: string}>(BACKEND_URL + id);
   }
   // addPost(post: Post) {
   //   this.http
@@ -67,7 +69,7 @@ export class PostService implements OnInit {
     postData.append('image', post.imagePath, post.title);
     this.http
       .post<{ message: string; post: Post }>(
-        'http://localhost:3000/api/posts',
+        BACKEND_URL ,
         postData
       )
       .subscribe(responseData => {
@@ -92,13 +94,13 @@ export class PostService implements OnInit {
         creator: null
       };
     }
-    this.http.put<{ message: string, post: Post}>(`http://localhost:3000/api/posts/${post.id}`, postData)
+    this.http.put<{ message: string, post: Post}>(BACKEND_URL + `/${post.id}`, postData)
     .subscribe(res => {
       this.router.navigate(['']);
     });
   }
   deletePost(id: string) {
     return this.http
-      .delete<{ message: string }>(`http://localhost:3000/api/posts/${id}`);
+      .delete<{ message: string }>(BACKEND_URL + `/${id}`);
   }
 }

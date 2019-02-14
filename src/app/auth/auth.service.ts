@@ -3,7 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { AuthData } from './Auth-Data.model';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
+const BACKEND_URL = environment.MongoApiUrl + '/users';
 @Injectable({
   providedIn: 'root'
 })
@@ -32,7 +34,7 @@ export class AuthService {
       email,
       password
     };
-    this.http.post('http://localhost:3000/api/users/signup', authData)
+    this.http.post( BACKEND_URL + '/signup', authData)
     .subscribe(response => {
       console.log(response);
       this.router.navigate(['/']);
@@ -46,7 +48,7 @@ export class AuthService {
       email,
       password
     };
-    this.http.post<{ token: string, expiresIn: number, userId: string }>('http://localhost:3000/api/users/login', authData)
+    this.http.post<{ token: string, expiresIn: number, userId: string }>(BACKEND_URL + '/login', authData)
     .subscribe(response => {
       this.token = response.token;
       if (this.token) {
